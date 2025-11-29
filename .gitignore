@@ -24,14 +24,15 @@ wheels/
 *.egg
 
 # Flask
-instance/
+instance/*
+!instance/parking_app.db
 .webassets-cache
 
 # Database
 *.db
+!instance/parking_app.db
 *.sqlite
 *.sqlite3
-
 # Environment variables
 .env
 .env.local
