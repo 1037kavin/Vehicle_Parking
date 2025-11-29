@@ -1,0 +1,84 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Flask
+instance/
+.webassets-cache
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment variables
+.env
+.env.local
+env_file.txt
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.cursor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node (for frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+dist/
+
+# Celery
+celerybeat-schedule
+celerybeat-schedule.db
+celerybeat-schedule-shm
+celerybeat-schedule-wal
+
+# Test scripts (optional - keep if you want)
+test_*.ps1
+verify_*.ps1
+restart_*.ps1
+
+# Documentation (optional - keep main README)
+*_GUIDE.md
+*_FIXED.md
+*_APPLIED.md
+*_ADDED.md
+*_ENHANCED.md
+*_STATUS.md
+SETUP_GUIDE.md
+QUICK_START.md
+
+# Temporary folders
+Vp/
+
