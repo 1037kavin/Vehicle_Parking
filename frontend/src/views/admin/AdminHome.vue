@@ -56,8 +56,8 @@
           </div>
         </div>
         
-        <!-- Add Lot Button -->
-        <div class="text-center mt-4">
+        <!-- Add Lot Button (only when lots exist) -->
+        <div v-if="parkingLots.length > 0" class="text-center mt-4">
           <button 
             class="btn btn-add-lot"
             data-bs-toggle="modal" 

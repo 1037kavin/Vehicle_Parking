@@ -3,6 +3,7 @@ from flask_mail import Message
 from backend.tasks.celery_config import celery
 from backend.app import create_app, db, mail
 from backend.models import User, Reservation
+from backend.utils.timezone import get_ist_now
 
 @celery.task(name='backend.tasks.daily_reminder.send_daily_reminders')
 def send_daily_reminders():
@@ -11,7 +12,7 @@ def send_daily_reminders():
     
     with app.app_context():
         # Get users who haven't made any reservations in the last 7 days
-        seven_days_ago = datetime.utcnow() - timedelta(days=7)
+        seven_days_ago = get_ist_now() - timedelta(days=7)
         
         # Find inactive users
         all_users = User.query.filter_by(role='user', is_active=True).all()

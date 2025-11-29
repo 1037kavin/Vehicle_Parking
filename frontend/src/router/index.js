@@ -125,6 +125,40 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
+// After navigation, reset navbar collapse state (fixes stuck navbar issue)
+router.afterEach((to, from) => {
+  // Wait for DOM to update
+  setTimeout(() => {
+    // Collapse navbar if it's expanded (fixes stuck navbar issue)
+    const navbarCollapse = document.getElementById('navbarNav')
+    if (navbarCollapse) {
+      // Remove 'show' class to collapse the navbar
+      navbarCollapse.classList.remove('show')
+      
+      // Also reset Bootstrap collapse instance if it exists
+      if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+        const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse)
+        if (bsCollapse) {
+          bsCollapse.hide()
+        }
+      }
+    }
+    
+    // Refresh page once after navigation to ensure clean state
+    // Use a flag to prevent infinite refresh loop
+    if (!sessionStorage.getItem('navRefreshed')) {
+      sessionStorage.setItem('navRefreshed', 'true')
+      // Small delay to ensure navigation completes before refresh
+      setTimeout(() => {
+        window.location.reload()
+      }, 50)
+    } else {
+      // Reset flag after refresh completes
+      sessionStorage.removeItem('navRefreshed')
+    }
+  }, 10)
+})
+
 export default router
 
 

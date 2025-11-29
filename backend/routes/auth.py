@@ -3,6 +3,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from datetime import datetime
 from backend.app import db
 from backend.models import User
+from backend.utils.timezone import get_ist_now
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -67,7 +68,7 @@ def login():
             return jsonify({'error': 'Account is deactivated'}), 403
         
         # Update last login
-        user.last_login = datetime.utcnow()
+        user.last_login = get_ist_now()
         db.session.commit()
         
         # Create access token with user ID as string (JWT requires string subject)

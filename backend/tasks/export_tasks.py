@@ -5,6 +5,7 @@ from flask_mail import Message
 from backend.tasks.celery_config import celery
 from backend.app import create_app, db, mail
 from backend.models import Reservation, ParkingSpot, ParkingLot
+from backend.utils.timezone import get_ist_now
 
 @celery.task(name='backend.tasks.export_tasks.export_user_reservations_csv')
 def export_user_reservations_csv(user_id, user_email):
@@ -16,7 +17,7 @@ def export_user_reservations_csv(user_id, user_email):
         reservations = Reservation.query.filter_by(user_id=user_id).order_by(Reservation.created_at.desc()).all()
         
         # Create CSV file
-        filename = f'parking_history_{user_id}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+        filename = f'parking_history_{user_id}_{get_ist_now().strftime("%Y%m%d_%H%M%S")}.csv'
         filepath = os.path.join('/tmp', filename)
         
         with open(filepath, 'w', newline='') as csvfile:

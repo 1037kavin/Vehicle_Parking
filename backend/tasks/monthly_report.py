@@ -6,6 +6,7 @@ import io
 from backend.tasks.celery_config import celery
 from backend.app import create_app, db, mail
 from backend.models import User, Reservation, ParkingSpot, ParkingLot
+from backend.utils.timezone import get_ist_now
 
 @celery.task(name='backend.tasks.monthly_report.generate_monthly_reports')
 def generate_monthly_reports():
@@ -17,7 +18,7 @@ def generate_monthly_reports():
         users = User.query.filter_by(role='user', is_active=True).all()
         
         # Get last month's date range
-        today = datetime.utcnow()
+        today = get_ist_now()
         first_day_current_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         last_day_previous_month = first_day_current_month - timedelta(days=1)
         first_day_previous_month = last_day_previous_month.replace(day=1)
@@ -130,7 +131,7 @@ def generate_monthly_reports_test():
         users = User.query.filter_by(role='user', is_active=True).all()
         
         # Get CURRENT month's date range (for testing)
-        today = datetime.utcnow()
+        today = get_ist_now()
         first_day_current_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         
         month_name = today.strftime('%B %Y')

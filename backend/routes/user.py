@@ -6,6 +6,7 @@ import csv
 import io
 from backend.app import db
 from backend.models import User, Reservation, ParkingSpot, ParkingLot
+from backend.utils.timezone import get_ist_now
 
 user_bp = Blueprint('user', __name__)
 
@@ -50,7 +51,7 @@ def get_user_dashboard():
         
         # Monthly spending for chart
         monthly_spending = []
-        current_date = datetime.utcnow()
+        current_date = get_ist_now()
         for i in range(6):  # Last 6 months
             month_start = (current_date - timedelta(days=30 * i)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
             month_end = month_start.replace(day=28) + timedelta(days=4) if i > 0 else current_date
@@ -116,7 +117,7 @@ def get_monthly_usage_chart():
         
         # Get data for last 12 months
         data = []
-        current_date = datetime.utcnow()
+        current_date = get_ist_now()
         
         for i in range(12):
             month_start = (current_date - timedelta(days=30 * i)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
@@ -256,7 +257,7 @@ def download_csv_export():
             io.BytesIO(output.getvalue().encode('utf-8')),
             mimetype='text/csv',
             as_attachment=True,
-            download_name=f'parking_history_{user_id}_{datetime.now().strftime("%Y%m%d")}.csv'
+            download_name=f'parking_history_{user_id}_{get_ist_now().strftime("%Y%m%d")}.csv'
         )
     
     except Exception as e:

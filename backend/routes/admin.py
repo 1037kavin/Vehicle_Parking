@@ -5,6 +5,7 @@ from sqlalchemy import func
 from datetime import datetime, timedelta
 from backend.app import db, mail
 from backend.models import User, ParkingLot, ParkingSpot, Reservation
+from backend.utils.timezone import get_ist_now, format_ist_iso
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -42,7 +43,7 @@ def get_admin_dashboard():
         ).scalar() or 0
         
         # Calculate today's revenue
-        today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_start = get_ist_now().replace(hour=0, minute=0, second=0, microsecond=0)
         today_revenue = db.session.query(func.sum(Reservation.parking_cost)).filter(
             Reservation.leaving_timestamp >= today_start,
             Reservation.status == 'completed'
@@ -65,8 +66,8 @@ def get_admin_dashboard():
                 'user_name': user.full_name or user.username,
                 'lot_name': lot.prime_location_name,
                 'spot_number': spot.spot_number,
-                'parking_timestamp': res.parking_timestamp.isoformat() if res.parking_timestamp else None,
-                'leaving_timestamp': res.leaving_timestamp.isoformat() if res.leaving_timestamp else None,
+                'parking_timestamp': format_ist_iso(res.parking_timestamp) if res.parking_timestamp else None,
+                'leaving_timestamp': format_ist_iso(res.leaving_timestamp) if res.leaving_timestamp else None,
                 'status': res.status,
                 'parking_cost': res.parking_cost or 0
             })
@@ -245,8 +246,8 @@ def get_all_reservations():
                 'lot_name': lot.prime_location_name,
                 'spot_number': spot.spot_number,
                 'vehicle_number': res.vehicle_number,
-                'parking_timestamp': res.parking_timestamp.isoformat() if res.parking_timestamp else None,
-                'leaving_timestamp': res.leaving_timestamp.isoformat() if res.leaving_timestamp else None,
+                'parking_timestamp': format_ist_iso(res.parking_timestamp) if res.parking_timestamp else None,
+                'leaving_timestamp': format_ist_iso(res.leaving_timestamp) if res.leaving_timestamp else None,
                 'status': res.status,
                 'payment_status': res.payment_status,
                 'parking_cost': res.parking_cost or 0
@@ -288,7 +289,7 @@ def get_spot_details(spot_id):
                     'user_name': user.full_name or user.username,
                     'vehicle_number': reservation.vehicle_number,
                     'vehicle_type': reservation.vehicle_type,
-                    'parking_timestamp': reservation.parking_timestamp.isoformat() if reservation.parking_timestamp else None,
+                    'parking_timestamp': format_ist_iso(reservation.parking_timestamp) if reservation.parking_timestamp else None,
                     'duration_hours': reservation.get_duration_hours(),
                     'parking_cost': reservation.parking_cost,
                     'payment_status': reservation.payment_status,
@@ -342,7 +343,7 @@ def get_revenue_chart_data():
         
         # Get revenue for last 12 months
         data = []
-        current_date = datetime.utcnow()
+        current_date = get_ist_now()
         
         for i in range(12):
             month_start = (current_date - timedelta(days=30 * i)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
@@ -406,7 +407,7 @@ Best regards,
 Parking Manager System
 
 ---
-Sent at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Sent at: {get_ist_now().strftime('%Y-%m-%d %H:%M:%S')}
 """
         )
         

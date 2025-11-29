@@ -5,6 +5,7 @@ import io
 import csv
 from backend.app import db, cache
 from backend.models import Reservation, ParkingSpot, ParkingLot, User
+from backend.utils.timezone import get_ist_now, format_ist_iso
 
 reservation_bp = Blueprint('reservation', __name__)
 
@@ -25,8 +26,8 @@ def get_my_reservations():
                 'id': res.id,
                 'lot_name': lot.prime_location_name,
                 'spot_number': spot.spot_number,
-                'parking_timestamp': res.parking_timestamp.isoformat() if res.parking_timestamp else None,
-                'leaving_timestamp': res.leaving_timestamp.isoformat() if res.leaving_timestamp else None,
+                'parking_timestamp': format_ist_iso(res.parking_timestamp) if res.parking_timestamp else None,
+                'leaving_timestamp': format_ist_iso(res.leaving_timestamp) if res.leaving_timestamp else None,
                 'status': res.status,
                 'parking_cost': res.parking_cost or 0
             })
@@ -65,7 +66,7 @@ def create_reservation():
             user_id=user_id,
             vehicle_number=data.get('vehicle_number', 'N/A'),
             vehicle_type=data.get('vehicle_type', '4-Wheeler'),
-            parking_timestamp=datetime.utcnow(),
+            parking_timestamp=get_ist_now(),
             status='active',
             remarks=data.get('remarks', '')
         )
@@ -85,7 +86,7 @@ def create_reservation():
                 'id': reservation.id,
                 'spot_number': spot.spot_number,
                 'lot_name': lot.prime_location_name,
-                'parking_timestamp': reservation.parking_timestamp.isoformat()
+                'parking_timestamp': format_ist_iso(reservation.parking_timestamp)
             }
         }), 201
     
@@ -118,7 +119,7 @@ def release_reservation(reservation_id):
         lot = ParkingLot.query.get(spot.lot_id)
         
         # Update reservation
-        reservation.leaving_timestamp = datetime.utcnow()
+        reservation.leaving_timestamp = get_ist_now()
         reservation.status = 'completed'
         reservation.calculate_cost(lot.price_per_hour)
         
@@ -201,7 +202,7 @@ def export_reservations():
         csv_bytes = BytesIO(output.getvalue().encode('utf-8'))
         csv_bytes.seek(0)
         
-        filename = f'parking_history_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+        filename = f'parking_history_{get_ist_now().strftime("%Y%m%d_%H%M%S")}.csv'
         
         return send_file(
             csv_bytes,
